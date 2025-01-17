@@ -1,17 +1,17 @@
 package Constants;
 
-public enum ServerStatistics {
+public enum Statistics {
 
     CONNECTED_CLIENTS("Number of newly connected clients"),
-    OPERATIONS_SUCCESS_COUNTER("Number of operations calculated"),
-    OPERATIONS_ATTEMPTS_COUNTER("Any calculation attempt"),
-    OPERATIONS_ERRORS_COUNTER("Number of error operations"),
+    SUCCESS_COUNTER("Number of operations calculated"),
+    ATTEMPTS_COUNTER("Any calculation attempt"),
+    ERRORS_COUNTER("Number of error operations"),
     RESULT_SUM("Sum of results");
 
     private final String description;
     private int value;
 
-    ServerStatistics(String description) {
+    Statistics(String description) {
         this.description = description;
         this.value = 0;
     }

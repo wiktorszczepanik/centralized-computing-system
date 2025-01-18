@@ -1,4 +1,4 @@
-package Constants;
+package Calculations;
 
 public enum Statistics {
 

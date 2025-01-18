@@ -1,7 +1,8 @@
-package Constants;
+package Calculations;
 
 import Exceptions.ArgumentException;
-import Exceptions.FlagException;
+
+import java.util.Random;
 
 public enum Arithmetic {
 
@@ -28,5 +29,11 @@ public enum Arithmetic {
                 return operation;
         }
         throw new ArgumentException("Invalid operation token.");
+    }
+
+    public static Arithmetic getRandom(Random random) {
+        Arithmetic[] values = Arithmetic.values();
+        int index = random.nextInt(values.length);
+        return values[index];
     }
 }

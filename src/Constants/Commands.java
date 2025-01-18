@@ -3,7 +3,8 @@ package Constants;
 public enum Commands {
 
     DISCOVER("CSS_DISCOVER"),
-    FOUND("CSS_FOUND");
+    FOUND("CSS_FOUND"),
+    ERROR("ERROR: ");
 
     private final String description;
 

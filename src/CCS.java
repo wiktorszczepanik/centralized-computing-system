@@ -1,10 +1,13 @@
+import Logs.Dependencies.Site;
 import Exceptions.FlagException;
 import Exceptions.PortException;
+import Logs.Logger;
 import Service.ServerCCS;
 
 public class CCS {
 
     public static void main(String[] args) {
+        Logger.setPrefix(Site.SERVER);
         try {
             if (args.length != 1)
                 throw new FlagException("Incorrect number of flags.\n" +
@@ -19,7 +22,7 @@ public class CCS {
         }
     }
 
-    private static int getPort(String text) throws PortException {
+    public static int getPort(String text) throws PortException {
         if (text == null || text.isEmpty())
             throw new PortException("Empty argument.");
         int port;

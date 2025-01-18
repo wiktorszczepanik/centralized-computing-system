@@ -2,23 +2,28 @@ import Logs.Dependencies.Site;
 import Exceptions.FlagException;
 import Exceptions.PortException;
 import Logs.Logger;
+import Logs.Logs;
 import Service.ServerCCS;
 
 public class CCS {
 
     public static void main(String[] args) {
         Logger.setPrefix(Site.SERVER);
+        Logger.log("Validate args...");
         try {
-            if (args.length != 1)
+            if (args.length != 1) {
+                Logger.sendStatus(Logs.ERROR);
                 throw new FlagException("Incorrect number of flags.\n" +
-                    "Syntax is: java -jar CCS.jar <port>");
+                        "Syntax is: java -jar CCS.jar <port>");
+            }
+            Logger.sendStatus(Logs.CORRECT);
             int port = getPort(args[0]);
             ServerCCS server = new ServerCCS(port);
             server.run();
-        } catch (FlagException | PortException exception) {
-            System.err.println(" Input values exception:\n" + exception.getMessage());
+        } catch (FlagException | PortException fpe) {
+            System.err.println("Input values exception: " + fpe.getMessage());
         } catch (Exception exception) {
-            System.err.println(" Server running exception:\n" + exception.getMessage());
+            System.err.println("Server exception: " + exception.getMessage());
         }
     }
 

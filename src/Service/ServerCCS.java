@@ -10,10 +10,8 @@ import Logs.Logs;
 
 import java.io.*;
 import java.io.IOException;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.ServerSocket;
-import java.net.Socket;
+import java.net.*;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.ConcurrentHashMap;
@@ -44,7 +42,7 @@ public class ServerCCS {
             periodicStatisticsReport.scheduleAtFixedRate(
                 () -> reportStatistics(), 10, 10, TimeUnit.SECONDS);
             Logger.sendStatus(Logs.DONE);
-            System.out.println("Set discovery clients...");
+            Logger.log("Set clients discovery...");
             new Thread(() -> clientInit(udpSocket)).start();
             Logger.sendStatus(Logs.DONE);
             while (true) {
@@ -70,10 +68,12 @@ public class ServerCCS {
                 requestPacket = getPacket(udpSocket);
                 String message = transformToTextMessage(requestPacket.getData());
                 if (message.startsWith(Commands.DISCOVER.getDescription())) {
+                    Logger.log("Client found...");
                     String response = Commands.FOUND.getDescription();
                     responsePacket = new DatagramPacket(response.getBytes(), response.length(),
                         requestPacket.getAddress(), requestPacket.getPort());
                     udpSocket.send(responsePacket);
+                    Logger.sendStatus(Logs.CORRECT);
                 }
             } catch (IOException exception) {
                 exception.printStackTrace();
@@ -89,10 +89,22 @@ public class ServerCCS {
     }
 
     private String transformToTextMessage(byte[] messageArray) {
+        byte[] cleanMessageArray = dropNulls(messageArray);
         StringBuilder text = new StringBuilder();
-        for (byte b : messageArray)
+        for (byte b : cleanMessageArray)
             text.append((char) b);
         return text.toString();
+    }
+
+    private static byte[] dropNulls(byte[] arrayMessage) {
+        int length = arrayMessage.length;
+        int lastIndex = 1;
+        for (int i = length - 1; i > 0; i--)
+            if (arrayMessage[i] != 0x00) {
+                lastIndex = i + 1;
+                break;
+            }
+        return Arrays.copyOfRange(arrayMessage, 0, lastIndex);
     }
 
     private void clientDeal(Socket clientSocket) throws IOException {
@@ -105,27 +117,37 @@ public class ServerCCS {
                 int[] num = getNumberArguments(tokens);
                 int result;
                 try {
+                    Logger.log("Calculation...");
                     validateTokens(tokens);
                     Arithmetic operation = Arithmetic.getToken(tokens[0]);
                     result = arithmeticOperationResult(operation, num[0], num[1]);
+                    Logger.sendStatus(Logs.CORRECT);
                 } catch (ArgumentException | OperationException | ArithmeticException exception) {
-                    System.err.println(exception.getMessage());
+                    Logger.sendStatus(Logs.ERROR);
                     incrementStatistics(Statistics.ERRORS_COUNTER);
                     writer.println(Commands.ERROR.getDescription() + exception.getMessage());
                     continue;
                 } catch (NumberFormatException exception) {
+                    Logger.sendStatus(Logs.ERROR);
                     String exceptionInfo = "Incorrect number format in arguments.";
                     System.err.println(exceptionInfo);
                     incrementStatistics(Statistics.ERRORS_COUNTER);
                     writer.println(Commands.ERROR.getDescription() + exceptionInfo);
                     continue;
                 }
+                Logger.log("Send calculations...");
                 writer.println(result);
+                Logger.sendStatus(Logs.DONE);
                 incrementStatistics(Statistics.SUCCESS_COUNTER);
                 resultSumStatistics(result);
             }
         } catch (IOException ioe) {
             throw new RuntimeException(ioe);
+        } finally {
+            Logger.log("Closing client...");
+            if (!clientSocket.isClosed()) clientSocket.close();
+            // decrementStatistics(Statistics.CONNECTED_CLIENTS);
+            Logger.sendStatus(Logs.DONE);
         }
     }
 
@@ -164,14 +186,21 @@ public class ServerCCS {
             (oldValue, newValue) -> oldValue + newValue);
     }
 
+    private void decrementStatistics(Statistics stat) {
+        statistics.merge(stat, 1,
+                (oldValue, newValue) -> oldValue - newValue);
+    }
+
     private void resultSumStatistics(int value) {
         statistics.merge(Statistics.RESULT_SUM, value,
             (oldValue, newValue) -> oldValue + newValue);
     }
 
     private void reportStatistics() {
+        Statistics.printSeparator(50);
         for (Map.Entry<Statistics, Integer> pair : statistics.entrySet())
-            System.out.println(pair);
+            System.out.println("[STATISTICS] " + pair.getKey() + " " + pair.getValue());
+        Statistics.printSeparator(50);
     }
 
 }

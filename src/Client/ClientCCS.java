@@ -2,10 +2,10 @@ package Client;
 
 import Calculations.Arithmetic;
 import Constants.Commands;
+import Exceptions.FlagException;
 import Logs.Dependencies.Site;
 import Logs.Logger;
 import Logs.Logs;
-import jdk.internal.net.http.common.Log;
 
 import java.io.*;
 import java.net.*;
@@ -21,8 +21,13 @@ public class ClientCCS {
         Logger.setPrefix(Site.CLIENT);
         Logger.log("Validate args...");
         if (args.length != 1) {
-            System.err.println("Syntax is: java -jar ClientCCS.jar <port>");
-            return;
+            try { throw new FlagException("Incorrect number of flags.\n" +
+                "Syntax is: java -jar ClientCCS.jar <port>");
+            } catch (FlagException fe) {
+                Logger.sendStatus(Logs.ERROR);
+                System.err.println("Input values exception: " + fe.getMessage());
+                return;
+            }
         }
         Logger.sendStatus(Logs.CORRECT);
         port = Integer.parseInt(args[0]);
@@ -31,9 +36,9 @@ public class ClientCCS {
             Logger.log("Discover CCS server...");
             serverAddress = serverInit(port);
             Logger.sendStatus(Logs.DONE);
-            System.out.println("Server found at: " + serverAddress.getHostAddress());
-        } catch (IOException e) {
-            System.err.println("Failed to discover server: " + e.getMessage());
+        } catch (IOException ioe) {
+            Logger.sendStatus(Logs.ERROR);
+            System.err.println("\nFailed to discover server: " + ioe.getMessage());
             return;
         }
         Logger.log("Connect to server...");
@@ -44,14 +49,14 @@ public class ClientCCS {
             Random random = new Random();
             while (true) {
                 Arithmetic operation = Arithmetic.getRandom(random);
-                int arg1 = random.nextInt(100);
-                int arg2 = random.nextInt(100);
+                int arg1 = random.nextInt(10);
+                int arg2 = random.nextInt(10);
                 String request = operation + " " + arg1 + " " + arg2;
-                Logger.log("Sending request: " + request);
+                Logger.log("Sending request: (" + request + ")");
                 writer.println(request);
                 Logger.sendStatus(Logs.CORRECT);
                 String response = reader.readLine();
-                Logger.log("Response from server: " + response);
+                Logger.log("Response from server: " + response + " ");
                 if (request.startsWith("ERROR")) Logger.sendStatus(Logs.ERROR);
                 else Logger.sendStatus(Logs.RECEIVED);
                 TimeUnit.SECONDS.sleep(random.nextInt(4) + 1);
@@ -66,11 +71,11 @@ public class ClientCCS {
             udpSocket.setBroadcast(true);
             byte[] sendData = Commands.DISCOVER.getDescription().getBytes();
             DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length,
-                InetAddress.getByName("255.255.255.255"), port);
+                InetAddress.getByName("localhost"), port);
             udpSocket.send(sendPacket);
             byte[] receiveBuffer = new byte[bufferSize];
             DatagramPacket receivePacket = new DatagramPacket(receiveBuffer, receiveBuffer.length);
-            udpSocket.setSoTimeout(3000);
+            udpSocket.setSoTimeout(5000);
             udpSocket.receive(receivePacket);
             String response = new String(receivePacket.getData(), 0, receivePacket.getLength());
             if (Commands.FOUND.getDescription().equals(response.trim()))

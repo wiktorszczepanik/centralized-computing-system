@@ -25,10 +25,6 @@ Server runs using the command:
 java -jar CCS.jar <port>
 ```
 
-### Handling Multiple Clients
-
-The application is designed to handle multiple clients simultaneously. Each client is managed by a separate thread, allowing the server to process multiple requests at the same time.
-
 ### Client implementation
 
 The client sends a UDP broadcast to discover the server and connects via TCP to request arithmetic operations like ADD, SUB, MUL or DIV. The client operates according to the protocol and can terminate the process at any time.
@@ -37,6 +33,11 @@ Client runs using the command:
 ```Bash
 java -jar ClientCCS.jar <port>
 ```
+
+### Handling Multiple Clients
+
+The application is designed to handle multiple clients simultaneously. Each client is managed by a separate thread, allowing the server to process multiple requests at the same time.
+
 
 ### Requirements
 

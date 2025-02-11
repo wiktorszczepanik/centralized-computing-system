@@ -9,7 +9,11 @@ Project was developed as part of the SKJ course at PJATK.
 The application operates as a server that:
 
 - Detects services – Through the *clientInit* method, the server listens on a *UDP* port, receiving messages from clients to detect the service. Upon receiving a "CCS DISCOVER" message, it responds with a "CCS FOUND" message to the sender's address.
+
+
 - Performs calculations via *TCP* connections – Using the *clientDeal* method, the server waits for messages from clients and performs calculations based on the message content. The format for these messages is <OPERATION> <ARG1> <ARG2>. The server supports arithmetic operations (ADD, SUB, MUL, DIV) and returns either a result or an error depending on the input arguments.
+
+
 - Reports statistics – Every 10 seconds, the server displays current statistics including the number of connections, performed operations, operation attempts (regardless of result), errors, and the sum of results.
 
 Server runs using the command:

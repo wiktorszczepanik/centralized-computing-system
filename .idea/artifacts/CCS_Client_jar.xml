@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="CCS_Client:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/CCS_Client_jar</output-path>
+    <root id="archive" name="ClientCCS.jar">
+      <element id="module-output" name="centralized-computing-system" />
+    </root>
+  </artifact>
+</component>

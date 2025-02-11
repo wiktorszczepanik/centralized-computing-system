@@ -1,5 +1,7 @@
 ## Centralized Computing System (CCS)
 
+### Overview
+
 The CCS application is a computation **server** implemented in Java that provides three main functionalities: service discovery (*UDP*), client communication (*TCP*), and statistics reporting.
 A **client** application discovers the server via broadcast, then connects and request arithmetic operations. The server processes these requests and returns results or error messages.
 Project was developed as part of the SKJ course at PJATK.

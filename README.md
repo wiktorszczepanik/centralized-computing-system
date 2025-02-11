@@ -6,6 +6,8 @@ The CCS application is a computation **server** implemented in Java that provide
 A **client** application discovers the server via broadcast, then connects and request arithmetic operations. The server processes these requests and returns results or error messages.
 Project was developed as part of the SKJ course at PJATK.
 
+![showcase](asset/showcase.gif)
+
 ### Server implementation
 
 The application operates as a server that:

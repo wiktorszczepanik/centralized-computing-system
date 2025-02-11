@@ -117,25 +117,26 @@ public class ServerCCS {
                 int[] num = getNumberArguments(tokens);
                 int result;
                 try {
-                    Logger.log("Calculation...");
                     validateTokens(tokens);
+                    Logger.log("Calculate (" + tokens[0] + " " + tokens[1] + " " + tokens[2] + ")");
                     Arithmetic operation = Arithmetic.getToken(tokens[0]);
                     result = arithmeticOperationResult(operation, num[0], num[1]);
-                    Logger.sendStatus(Logs.CORRECT);
+                    Logger.sendStatus(Logs.DONE);
                 } catch (ArgumentException | OperationException | ArithmeticException exception) {
                     Logger.sendStatus(Logs.ERROR);
                     incrementStatistics(Statistics.ERRORS_COUNTER);
+                    Logger.log("Send error message...");
                     writer.println(Commands.ERROR.getDescription() + exception.getMessage());
+                    Logger.sendStatus(Logs.DONE);
                     continue;
                 } catch (NumberFormatException exception) {
                     Logger.sendStatus(Logs.ERROR);
                     String exceptionInfo = "Incorrect number format in arguments.";
-                    System.err.println(exceptionInfo);
                     incrementStatistics(Statistics.ERRORS_COUNTER);
                     writer.println(Commands.ERROR.getDescription() + exceptionInfo);
                     continue;
                 }
-                Logger.log("Send calculations...");
+                Logger.log("Send calculations (" + result + ")");
                 writer.println(result);
                 Logger.sendStatus(Logs.DONE);
                 incrementStatistics(Statistics.SUCCESS_COUNTER);

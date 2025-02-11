@@ -3,10 +3,10 @@ package Calculations;
 public enum Statistics {
 
     CONNECTED_CLIENTS("Number of newly connected clients..."),
-    SUCCESS_COUNTER("Number of operations calculated....."),
-    ATTEMPTS_COUNTER("Any calculation attempt............."),
-    ERRORS_COUNTER("Number of error operations.........."),
-    RESULT_SUM("Sum of results......................");
+    SUCCESS_COUNTER("Number of successful operations....."),
+    ATTEMPTS_COUNTER("Number of calculation attempts......"),
+    ERRORS_COUNTER("Number of operations with errors...."),
+    RESULT_SUM("Sum of the results..................");
 
     private final String description;
     private int value;

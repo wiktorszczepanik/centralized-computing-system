@@ -56,7 +56,7 @@ public class ClientCCS {
                 writer.println(request);
                 Logger.sendStatus(Logs.CORRECT);
                 String response = reader.readLine();
-                Logger.log("Response from server: " + response + " ");
+                Logger.log("Response: " + response + " ");
                 if (request.startsWith("ERROR")) Logger.sendStatus(Logs.ERROR);
                 else Logger.sendStatus(Logs.RECEIVED);
                 TimeUnit.SECONDS.sleep(random.nextInt(4) + 1);
